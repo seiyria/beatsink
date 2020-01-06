@@ -1,0 +1,37 @@
+
+.clickable {
+  cursor: pointer;
+}
+
+.query {
+  margin-top: 0.5rem;
+}
+
+.query .card {
+  width: 100%;
+}
+
+.query .card .card-title {
+  margin-bottom: 0;
+}
+
+.query .card .card-title .expando {
+  margin-right: 4px;
+}
+
+.query .card .card-body {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+}
+
+.query .card .card-body .results {
+  margin-top: 0.5rem;
+}
+
+.query .card .card-body .results .result {
+  margin-top: 5px;
+}
+
+.query .card .card-body .results .difficulty {
+  margin-right: 5px;
+}

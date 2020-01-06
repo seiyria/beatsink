@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Beatsink</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com" />
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="index.css">
+    
+    <script src="https://unpkg.com/vue@2.5.6"></script>
+
+  </head>
+  <body>
+    <div id="app">
+
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Beatsink</a>
+
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <button class="btn btn-primary" @click="createQuery()">Add Query</button>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="container mt-3">
+        <div class="row query" v-for="queryKey in queryKeys">
+          <div class="card"
+               @mouseenter="queries[queryKey].hovering = true"
+               @mouseleave="queries[queryKey].hovering = false">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fa fa-fw fa-spinner fa-spin" v-if="queries[queryKey].loading"></i>
+
+                <i class="fa fa-fw expando clickable" 
+                   @click="toggleExpand(queries[queryKey])"
+                   v-if="!queries[queryKey].loading"
+                   v-bind:class="{ 'fa-plus-square': !queries[queryKey].expanded, 'fa-minus-square': queries[queryKey].expanded }"></i>
+
+                {{ queries[queryKey].name }} <small>// {{ queries[queryKey].results.length }} result(s)</small>
+              
+                <i class="fa fa-trash clickable float-right" v-if="queries[queryKey].hovering" @click="removeQuery(queries[queryKey])"></i>
+              </h5>
+
+              <div class="card-text" v-if="queries[queryKey].expanded">
+
+                <div v-if="queries[queryKey].results.length === 0">No results found</div>
+
+                <ol class="results">
+                  <li class="result" v-for="result in queries[queryKey].results">
+
+                    <div>
+                      <a :href="result.link" target="_blank">
+                        <i class="fa fa-fw fa-external-link"></i>
+                      </a>
+  
+                      <a :href="result.oneclickLink" target="_blank">
+                        <i class="fa fa-fw fa-download"></i>
+                      </a>
+                      
+                      {{ result.title }}
+
+                      <span class="badge badge-secondary difficulty" v-for="diff of result.difficulties">{{ diff }}</span>
+                    </div>
+
+                  </li>
+                </ol>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      Vue.config.productionTip = false;
+      require('./index.js');
+    </script>
+
+  </body>
+</html>
