@@ -2,6 +2,9 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const open = require('open');
 
+const Config = require('electron-config');
+const config = new Config();
+
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
 
 const Xray = require('x-ray');
@@ -17,20 +20,32 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 let mainWindow;
 
 const createWindow = () => {
+
+  const opts = { 
+    show: false,
+    webPreferences: { nodeIntegration: true } 
+  };
+
+  Object.assign(opts, config.get('winBounds'));
+
+  if(!opts.height) opts.height = 768;
+  if(!opts.width) opts.width = 1024;
+
   // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-        nodeIntegration: true
-    }
-  });
+  mainWindow = new BrowserWindow(opts);
+  mainWindow.setMenu(null);
+  
+  mainWindow.once('ready-to-show', mainWindow.show);
 
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, '..', 'frontend', 'index.html'));
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
+
+  mainWindow.on('close', () => {
+    config.set('winBounds', mainWindow.getBounds());
+  });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {

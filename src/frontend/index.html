@@ -27,11 +27,12 @@
         </ul>
       </nav>
 
-      <div class="container mt-3">
-        <div class="row query" v-for="queryKey in queryKeys">
+      <div class="container mt-3" v-cloak>
+        <div class="row query" v-for="queryKey in queryKeys" v-bind:key="queryKey">
           <div class="card"
-               @mouseenter="queries[queryKey].hovering = true"
-               @mouseleave="queries[queryKey].hovering = false">
+               @mouseenter="setHover(queries[queryKey], true)"
+               @mouseleave="setHover(queries[queryKey], false)">
+               
             <div class="card-body">
               <h5 class="card-title">
                 <i class="fa fa-fw fa-spinner fa-spin" v-if="queries[queryKey].loading"></i>

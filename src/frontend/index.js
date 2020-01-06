@@ -15,13 +15,8 @@ const vm = new Vue({
   el: '#app',
 
   data: {
-    queries: {}
-  },
-
-  computed: {
-    queryKeys() {
-      return Object.keys(this.queries).sort();
-    }
+    queries: {},
+    queryKeys: []
   },
 
   created() {
@@ -30,6 +25,11 @@ const vm = new Vue({
   },
 
   methods: {
+    rerender() {
+      this.queryKeys = Object.keys(this.queries).sort();
+      this.$forceUpdate();
+    },
+
     save() {
       localStorage.setItem('queries', JSON.stringify(this.queries || {}));
     },
@@ -44,6 +44,8 @@ const vm = new Vue({
       Object.keys(this.queries).forEach(x => {
         this.queries[x] = Object.assign(new Query(), this.queries[x]);
       });
+
+      this.rerender();
     },
 
     init() {
@@ -58,9 +60,10 @@ const vm = new Vue({
     createQuery() {
       prompt({
         title: 'New Query',
-        label: 'What would you like to search for (separate multiple queries with a comma)?',
+        label: 'What would you like to search for?',
         inputAttrs: {
-            type: 'text'
+            type: 'text',
+            placeholder: 'separate multiple queries with a comma'
         },
         type: 'input'
       })
@@ -83,20 +86,33 @@ const vm = new Vue({
       this.updateQueryResults(queryName);
 
       this.save();
-      this.$forceUpdate();
+
+      this.rerender();
     },
 
     removeQuery(query) {
       delete this.queries[query.name];
 
       this.save();
-      this.$forceUpdate();
+
+      this.rerender();
+    },
+
+    setHover(query, val) {
+      console.log('hover', query, val);
+      if(!query) return;
+
+      query.hovering = val;
+
+      this.rerender();
     },
 
     toggleExpand(query) {
+      if(!query) return;
+
       query.expanded = !query.expanded;
 
-      this.$forceUpdate();
+      this.rerender();
     },
 
     updateQueryResults(queryName) {
@@ -113,4 +129,6 @@ ipcRenderer.on('check-sync-update', (event, args) => {
 
   vm.queries[args.query].results = args.allSongs;
   vm.queries[args.query].loading = false;
+
+  vm.rerender();
 });
